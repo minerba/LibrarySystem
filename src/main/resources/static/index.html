@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도서관 좌석 관리 시스템</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏫 도서관 좌석 관리 시스템</h1>
+            <div class="user-info">
+                <span id="userName">학생: 홍길동</span>
+                <span id="studentId">(ID: 2021001)</span>
+            </div>
+        </header>
+
+        <main>
+            <!-- 열람실 목록 -->
+            <section class="reading-rooms">
+                <h2>열람실 현황</h2>
+                <div id="roomList" class="room-list">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+            </section>
+
+            <!-- 선택한 열람실의 좌석 배치도 -->
+            <section class="seat-layout">
+                <h2 id="selectedRoomName">좌석 배치도</h2>
+                <div class="seat-info">
+                    <div class="legend">
+                        <span class="legend-item">
+                            <span class="seat vacant"></span> 공석
+                        </span>
+                        <span class="legend-item">
+                            <span class="seat occupied"></span> 사용중
+                        </span>
+                        <span class="legend-item">
+                            <span class="seat absent"></span> 일시부재
+                        </span>
+                    </div>
+                </div>
+                <div id="seatGrid" class="seat-grid">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+            </section>
+
+            <!-- 대기 목록 -->
+            <section class="waiting-section">
+                <h2>대기 목록</h2>
+                <div id="waitingList" class="waiting-list">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+            </section>
+
+            <!-- 내 신청 정보 -->
+            <section class="my-application">
+                <h2>내 신청 정보</h2>
+                <div id="myApplications" class="application-list">
+                    <p class="no-data">신청한 좌석이 없습니다.</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- QR 코드 스캔 모달 -->
+        <div id="qrModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>QR 코드 스캔</h3>
+                <input type="text" id="qrCodeInput" placeholder="QR 코드를 입력하세요">
+                <button id="scanButton" class="btn btn-primary">스캔하기</button>
+            </div>
+        </div>
+
+        <!-- 좌석 신청 모달 -->
+        <div id="applyModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>좌석 신청</h3>
+                <p id="seatInfo">좌석 정보</p>
+                <button id="confirmApply" class="btn btn-success">신청하기</button>
+            </div>
+        </div>
+
+        <!-- 하단 버튼 -->
+        <div class="action-buttons">
+            <button id="refreshBtn" class="btn btn-primary">🔄 새로고침</button>
+            <button id="qrScanBtn" class="btn btn-info">📷 QR 스캔</button>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

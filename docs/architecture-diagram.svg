@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <style>
+      .title { font: bold 24px sans-serif; fill: #2c3e50; }
+      .subtitle { font: bold 16px sans-serif; fill: #34495e; }
+      .text { font: 14px sans-serif; fill: #2c3e50; }
+      .small-text { font: 12px sans-serif; fill: #7f8c8d; }
+      .layer-box { fill: #ecf0f1; stroke: #34495e; stroke-width: 2; }
+      .presentation { fill: #3498db; }
+      .controller { fill: #e74c3c; }
+      .service { fill: #f39c12; }
+      .model { fill: #2ecc71; }
+      .arrow { stroke: #34495e; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .component { fill: white; stroke: #34495e; stroke-width: 1.5; rx: 5; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#34495e" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="400" y="30" text-anchor="middle" class="title">Library Seat Management System</text>
+  <text x="400" y="55" text-anchor="middle" class="subtitle">3-Tier Architecture</text>
+
+  <!-- Presentation Layer -->
+  <rect x="50" y="80" width="700" height="100" class="layer-box presentation" opacity="0.3" />
+  <text x="400" y="105" text-anchor="middle" class="subtitle" fill="white">Presentation Layer</text>
+  
+  <rect x="100" y="120" width="150" height="40" class="component" />
+  <text x="175" y="135" text-anchor="middle" class="text">HTML5</text>
+  <text x="175" y="152" text-anchor="middle" class="small-text">index.html</text>
+  
+  <rect x="275" y="120" width="150" height="40" class="component" />
+  <text x="350" y="135" text-anchor="middle" class="text">CSS3</text>
+  <text x="350" y="152" text-anchor="middle" class="small-text">style.css</text>
+  
+  <rect x="450" y="120" width="150" height="40" class="component" />
+  <text x="525" y="135" text-anchor="middle" class="text">JavaScript</text>
+  <text x="525" y="152" text-anchor="middle" class="small-text">app.js (ES6+)</text>
+  
+  <text x="650" y="140" text-anchor="start" class="small-text">반응형 UI</text>
+
+  <!-- Arrow 1: Presentation to Controller -->
+  <line x1="400" y1="180" x2="400" y2="220" class="arrow" />
+  <text x="420" y="205" class="small-text">REST API (JSON)</text>
+
+  <!-- Controller Layer -->
+  <rect x="50" y="220" width="700" height="100" class="layer-box controller" opacity="0.3" />
+  <text x="400" y="245" text-anchor="middle" class="subtitle" fill="white">Controller Layer</text>
+  
+  <rect x="150" y="260" width="500" height="40" class="component" />
+  <text x="400" y="275" text-anchor="middle" class="text">@RestController</text>
+  <text x="400" y="292" text-anchor="middle" class="small-text">LibraryController.java - HTTP 요청/응답 처리</text>
+
+  <!-- Arrow 2: Controller to Service -->
+  <line x1="400" y1="320" x2="400" y2="360" class="arrow" />
+  <text x="420" y="345" class="small-text">Service Interface</text>
+
+  <!-- Service Layer -->
+  <rect x="50" y="360" width="700" height="100" class="layer-box service" opacity="0.3" />
+  <text x="400" y="385" text-anchor="middle" class="subtitle" fill="white">Service Layer</text>
+  
+  <rect x="150" y="400" width="500" height="40" class="component" />
+  <text x="400" y="415" text-anchor="middle" class="text">@Service</text>
+  <text x="400" y="432" text-anchor="middle" class="small-text">LibraryService.java - 비즈니스 로직 및 트랜잭션</text>
+
+  <!-- Arrow 3: Service to Model -->
+  <line x1="400" y1="460" x2="400" y2="500" class="arrow" />
+  <text x="420" y="485" class="small-text">Domain Objects</text>
+
+  <!-- Model Layer -->
+  <rect x="50" y="500" width="700" height="80" class="layer-box model" opacity="0.3" />
+  <text x="400" y="525" text-anchor="middle" class="subtitle" fill="white">Model Layer (Domain Entities)</text>
+  
+  <text x="100" y="550" class="small-text">• Student (@Data)</text>
+  <text x="220" y="550" class="small-text">• Seat</text>
+  <text x="300" y="550" class="small-text">• ReadingRoom</text>
+  <text x="440" y="550" class="small-text">• WaitingList</text>
+  <text x="580" y="550" class="small-text">• CCTV</text>
+  
+  <text x="100" y="570" class="small-text">• StudentInfo</text>
+  <text x="220" y="570" class="small-text">• VideoInfo</text>
+  <text x="340" y="570" class="small-text">• LibraryAdmin</text>
+  <text x="500" y="570" class="small-text">• CCTVManager</text>
+</svg>
