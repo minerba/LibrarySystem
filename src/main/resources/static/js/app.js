@@ -1,13 +1,8 @@
 // API Base URL
 const API_BASE = window.location.origin + '/api';
 
-// 현재 로그인한 학생 정보 (시뮬레이션)
-const currentStudent = {
-    studentId: '2021001',
-    name: '홍길동',
-    major: '컴퓨터공학과',
-    phoneNumber: '010-1234-5678'
-};
+// 현재 로그인한 학생 정보
+let currentStudent = null;
 
 // 현재 선택된 열람실
 let selectedRoomId = null;
@@ -15,11 +10,144 @@ let myApplicationId = null;
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', () => {
+    checkLogin();
+});
+
+// 로그인 상태 확인
+function checkLogin() {
+    const savedStudent = localStorage.getItem('currentStudent');
+    if (savedStudent) {
+        currentStudent = JSON.parse(savedStudent);
+        showMainPage();
+    } else {
+        showAuthPage();
+    }
+}
+
+// 인증 페이지 표시
+function showAuthPage() {
+    document.getElementById('authContainer').style.display = 'block';
+    document.getElementById('mainContainer').style.display = 'none';
+}
+
+// 메인 페이지 표시
+function showMainPage() {
+    document.getElementById('authContainer').style.display = 'none';
+    document.getElementById('mainContainer').style.display = 'block';
+    
+    // 사용자 정보 표시
+    document.getElementById('userName').textContent = `학생: ${currentStudent.name}`;
+    document.getElementById('studentId').textContent = `(ID: ${currentStudent.studentId})`;
+    
     loadReadingRooms();
     setupEventListeners();
     // 5초마다 자동 새로고침
     setInterval(loadReadingRooms, 5000);
-});
+}
+
+// 로그인/회원가입 폼 전환
+function showLogin() {
+    document.getElementById('loginForm').style.display = 'flex';
+    document.getElementById('signupForm').style.display = 'none';
+}
+
+function showSignup() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('signupForm').style.display = 'flex';
+}
+
+// 회원가입
+async function signup() {
+    const name = document.getElementById('signupName').value.trim();
+    const major = document.getElementById('signupMajor').value.trim();
+    const phone = document.getElementById('signupPhone').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
+    
+    if (!name || !major || !phone || !password) {
+        alert('모든 항목을 입력해주세요.');
+        return;
+    }
+    
+    if (password !== passwordConfirm) {
+        alert('비밀번호가 일치하지 않습니다.');
+        return;
+    }
+    
+    if (phone && !/^01[0-9]-\d{4}-\d{4}$/.test(phone)) {
+        alert('전화번호 형식이 올바르지 않습니다. (예: 010-1234-5678)');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/signup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, major, phoneNumber: phone, password })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert(`회원가입이 완료되었습니다!\n학번: ${result.studentId}\n학번을 기억해주세요.`);
+            showLogin();
+            // 폼 초기화
+            document.getElementById('signupName').value = '';
+            document.getElementById('signupMajor').value = '';
+            document.getElementById('signupPhone').value = '';
+            document.getElementById('signupPassword').value = '';
+            document.getElementById('signupPasswordConfirm').value = '';
+        } else {
+            alert(result.message || '회원가입에 실패했습니다.');
+        }
+    } catch (error) {
+        console.error('회원가입 오류:', error);
+        alert('회원가입 중 오류가 발생했습니다.');
+    }
+}
+
+// 로그인
+async function login() {
+    const studentId = document.getElementById('loginStudentId').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    
+    if (!studentId || !password) {
+        alert('학번과 비밀번호를 입력해주세요.');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ studentId, password })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            currentStudent = result.student;
+            localStorage.setItem('currentStudent', JSON.stringify(currentStudent));
+            showMainPage();
+        } else {
+            alert(result.message || '로그인에 실패했습니다.');
+        }
+    } catch (error) {
+        console.error('로그인 오류:', error);
+        alert('로그인 중 오류가 발생했습니다.');
+    }
+}
+
+// 로그아웃
+function logout() {
+    if (confirm('로그아웃 하시겠습니까?')) {
+        currentStudent = null;
+        selectedRoomId = null;
+        myApplicationId = null;
+        localStorage.removeItem('currentStudent');
+        showAuthPage();
+    }
+}
 
 // 이벤트 리스너 설정
 function setupEventListeners() {
@@ -117,6 +245,7 @@ function displayReadingRooms(rooms) {
                 </div>
                 <small style="color: #666; margin-top: 5px; display: block;">사용률 ${occupiedRate}%</small>
             </div>
+            <button class="apply-room-btn" onclick="applyRoom('${room.roomId}', '${room.roomName}'); event.stopPropagation();">좌석 신청</button>
         `;
 
         roomCard.addEventListener('click', () => {
@@ -159,11 +288,8 @@ function displaySeats(seats, roomName) {
             <span class="seat-qr">${seat.qrCode}</span>
         `;
 
-        if (seat.status === 'VACANT') {
-            seatDiv.addEventListener('click', () => {
-                applySeat(seat);
-            });
-        }
+        // 좌석은 클릭 불가 (열람실에서 신청)
+        seatDiv.style.cursor = 'default';
 
         seatGrid.appendChild(seatDiv);
     });
@@ -193,9 +319,9 @@ function displayWaitingList(waitingList) {
     });
 }
 
-// 좌석 신청
-async function applySeat(seat) {
-    if (!confirm(`좌석 ${seat.seatNumber}번을 신청하시겠습니까?`)) {
+// 열람실 좌석 신청
+async function applyRoom(roomId, roomName) {
+    if (!confirm(`${roomName}에 좌석을 신청하시겠습니까?\n빈 좌석이 자동으로 배정됩니다.`)) {
         return;
     }
 
@@ -205,30 +331,29 @@ async function applySeat(seat) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 studentId: currentStudent.studentId,
-                roomId: selectedRoomId
+                roomId: roomId
             })
         });
 
         const result = await response.json();
-        showNotification(result.message, 'success');
         
-        if (result.applicationId) {
-            myApplicationId = result.applicationId;
-            updateMyApplications();
+        if (result.success) {
+            showNotification(result.message, 'success');
+            if (result.applicationId) {
+                myApplicationId = result.applicationId;
+                updateMyApplications();
+            }
+        } else {
+            showNotification(result.message, 'error');
         }
         
         loadReadingRooms();
+        if (selectedRoomId) {
+            loadSeats(selectedRoomId);
+        }
     } catch (error) {
         console.error('좌석 신청 실패:', error);
-        // 시뮬레이션
-        myApplicationId = 'APP-' + Date.now();
-        showNotification(`좌석 ${seat.seatNumber}번이 신청되었습니다.`, 'success');
-        updateMyApplications();
-        
-        // 좌석 상태 변경 (시뮬레이션)
-        setTimeout(() => {
-            loadSeats(selectedRoomId);
-        }, 500);
+        showNotification('좌석 신청 중 오류가 발생했습니다.', 'error');
     }
 }
 

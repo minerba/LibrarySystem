@@ -7,12 +7,37 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="container">
+    <!-- 로그인 화면 -->
+    <div id="authContainer" class="auth-container">
+        <div class="auth-box">
+            <h1>🏫 도서관 좌석 관리 시스템</h1>
+            <div id="loginForm" class="auth-form">
+                <h2>로그인</h2>
+                <input type="text" id="loginStudentId" placeholder="학번" required>
+                <input type="password" id="loginPassword" placeholder="비밀번호" required>
+                <button onclick="login()">로그인</button>
+                <p class="auth-link">계정이 없으신가요? <a href="#" onclick="showSignup(); return false;">회원가입</a></p>
+            </div>
+            <div id="signupForm" class="auth-form" style="display: none;">
+                <h2>회원가입</h2>
+                <input type="text" id="signupName" placeholder="이름" required>
+                <input type="text" id="signupMajor" placeholder="학과" required>
+                <input type="tel" id="signupPhone" placeholder="전화번호 (예: 010-1234-5678)" required>
+                <input type="password" id="signupPassword" placeholder="비밀번호" required>
+                <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required>
+                <button onclick="signup()">가입하기</button>
+                <p class="auth-link">이미 계정이 있으신가요? <a href="#" onclick="showLogin(); return false;">로그인</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer" style="display: none;">
         <header>
             <h1>🏫 도서관 좌석 관리 시스템</h1>
             <div class="user-info">
-                <span id="userName">학생: 홍길동</span>
-                <span id="studentId">(ID: 2021001)</span>
+                <span id="userName">학생: </span>
+                <span id="studentId">(ID: )</span>
+                <button onclick="logout()" class="logout-btn">로그아웃</button>
             </div>
         </header>
 

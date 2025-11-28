@@ -51,6 +51,7 @@ class ReadingRoom:
 reading_rooms: Dict[str, ReadingRoom] = {}
 students: Dict[str, Student] = {}
 applications: Dict[str, Dict] = {}
+user_accounts: Dict[str, Dict] = {}  # 학번: {password, studentInfo}
 
 def initialize_data():
     """초기 데이터 생성"""
@@ -137,6 +138,74 @@ def index():
     """메인 페이지"""
     return send_from_directory(app.static_folder, 'index.html')
 
+@app.route('/api/signup', methods=['POST'])
+def signup():
+    """회원가입"""
+    data = request.json
+    name = data.get('name')
+    major = data.get('major')
+    phone_number = data.get('phoneNumber')
+    password = data.get('password')
+    
+    if not all([name, major, phone_number, password]):
+        return jsonify({"success": False, "message": "모든 항목을 입력해주세요."}), 400
+    
+    # 학번 자동 생성 (년도 + 순번)
+    import time
+    student_id = f"STU{int(time.time()) % 1000000}"
+    
+    # 학생 정보 생성
+    student_info = StudentInfo(
+        student_id=student_id,
+        name=name,
+        major=major,
+        phone_number=phone_number
+    )
+    
+    # 계정 저장
+    user_accounts[student_id] = {
+        "password": password,
+        "studentInfo": student_info
+    }
+    
+    students[student_id] = Student(student_info=student_info)
+    
+    return jsonify({
+        "success": True,
+        "message": "회원가입이 완료되었습니다.",
+        "studentId": student_id
+    })
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    """로그인"""
+    data = request.json
+    student_id = data.get('studentId')
+    password = data.get('password')
+    
+    if not student_id or not password:
+        return jsonify({"success": False, "message": "학번과 비밀번호를 입력해주세요."}), 400
+    
+    if student_id not in user_accounts:
+        return jsonify({"success": False, "message": "존재하지 않는 학번입니다."}), 404
+    
+    account = user_accounts[student_id]
+    if account["password"] != password:
+        return jsonify({"success": False, "message": "비밀번호가 일치하지 않습니다."}), 401
+    
+    student_info = account["studentInfo"]
+    
+    return jsonify({
+        "success": True,
+        "message": "로그인 성공",
+        "student": {
+            "studentId": student_info.student_id,
+            "name": student_info.name,
+            "major": student_info.major,
+            "phoneNumber": student_info.phone_number
+        }
+    })
+
 @app.route('/api/rooms', methods=['GET'])
 def get_rooms():
     """열람실 목록 조회"""
@@ -177,17 +246,19 @@ def apply_seat():
     if room_id not in reading_rooms:
         return jsonify({"success": False, "message": "열람실을 찾을 수 없습니다."}), 404
     
+    # 이미 좌석을 배정받았는지 확인 (모든 열람실 검색)
+    for app_id, app_info in applications.items():
+        if app_info['studentId'] == student_id:
+            return jsonify({
+                "success": False,
+                "message": "이미 좌석을 배정받았습니다. 기존 좌석을 취소한 후 다시 신청해주세요."
+            }), 400
+    
     room = reading_rooms[room_id]
     
-    # 학생 정보 생성 또는 가져오기
+    # 학생 정보 가져오기
     if student_id not in students:
-        student_info = StudentInfo(
-            student_id=student_id,
-            name="홍길동",
-            major="컴퓨터공학과",
-            phone_number="010-1234-5678"
-        )
-        students[student_id] = Student(student_info=student_info)
+        return jsonify({"success": False, "message": "로그인이 필요합니다."}), 401
     
     student = students[student_id]
     
@@ -209,6 +280,7 @@ def apply_seat():
             "studentId": student_id,
             "roomId": room_id,
             "seatId": vacant_seat.seat_id,
+            "seatNumber": vacant_seat.seat_number,
             "timestamp": datetime.now().isoformat()
         }
         
