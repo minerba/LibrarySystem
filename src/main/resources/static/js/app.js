@@ -1,5 +1,5 @@
 // API Base URL
-const API_BASE = 'http://localhost:8080/api';
+const API_BASE = window.location.origin + '/api';
 
 // 현재 로그인한 학생 정보 (시뮬레이션)
 const currentStudent = {
