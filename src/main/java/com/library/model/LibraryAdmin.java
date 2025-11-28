@@ -2,11 +2,13 @@ package com.library.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * 도서관 관리자 클래스
  */
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 public class LibraryAdmin {
     private String adminId;

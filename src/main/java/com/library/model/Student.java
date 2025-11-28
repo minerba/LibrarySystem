@@ -2,11 +2,13 @@ package com.library.model;
 
 import lombok.Data;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 /**
  * 학생을 나타내는 클래스
  */
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class Student {
     private StudentInfo studentInfo;

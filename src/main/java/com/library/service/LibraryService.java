@@ -74,6 +74,13 @@ public class LibraryService {
     }
     
     /**
+     * 열람실 목록 조회 (외부 API용)
+     */
+    public List<ReadingRoom> getReadingRooms() {
+        return system.getReadingRoomList();
+    }
+    
+    /**
      * 열람실 ID로 찾기
      */
     public ReadingRoom findReadingRoomById(String roomId) {

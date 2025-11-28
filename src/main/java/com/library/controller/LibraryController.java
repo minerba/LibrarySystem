@@ -20,58 +20,11 @@ public class LibraryController {
     private LibraryService libraryService;
     
     /**
-     * 테스트 데이터 초기화
-     */
-    private void initializeTestData() {
-        // 관리자 생성
-        LibraryAdmin admin = new LibraryAdmin("admin001", "관리자");
-
-        // 열람실 등록
-        ReadingRoom room1 = admin.registerReadingRoom("제1열람실", 50);
-        ReadingRoom room2 = admin.registerReadingRoom("제2열람실", 40);
-        ReadingRoom room3 = admin.registerReadingRoom("제3열람실", 60);
-
-        system.addReadingRoom(room1);
-        system.addReadingRoom(room2);
-        system.addReadingRoom(room3);
-
-        // CCTV 등록
-        CCTV cctv1 = admin.registerCCTV("CCTV-001");
-        CCTV cctv2 = admin.registerCCTV("CCTV-002");
-        CCTV cctv3 = admin.registerCCTV("CCTV-003");
-
-        system.getCctvManager().addCCTV(cctv1);
-        system.getCctvManager().addCCTV(cctv2);
-        system.getCctvManager().addCCTV(cctv3);
-
-        // 일부 좌석 랜덤으로 배정
-        Random random = new Random();
-        for (ReadingRoom room : system.getReadingRoomList()) {
-            int occupiedSeats = room.getTotalSeats() / 2 + random.nextInt(room.getTotalSeats() / 4);
-            for (int i = 0; i < occupiedSeats && i < room.getSeatList().size(); i++) {
-                Seat seat = room.getSeatList().get(i);
-                StudentInfo info = new StudentInfo(
-                    "STU" + (1000 + i),
-                    "학생" + i,
-                    "컴퓨터공학과",
-                    "010-0000-" + String.format("%04d", i)
-                );
-                Student student = new Student(info);
-                seat.assignSeat(student);
-            }
-            room.updateSeatStatus();
-        }
-
-        System.out.println("✅ 테스트 데이터 초기화 완료");
-        System.out.println(system.getSystemStatus());
-    }
-    
-    /**
      * 열람실 목록 조회
      */
     @GetMapping("/rooms")
     public List<Map<String, Object>> getReadingRooms() {
-        return system.getReadingRoomList().stream()
+        return libraryService.getReadingRooms().stream()
             .map(room -> {
                 Map<String, Object> roomData = new HashMap<>();
                 roomData.put("roomId", room.getRoomId());
@@ -151,7 +104,6 @@ public class LibraryController {
      * 좌석 신청 취소
      */
     @PostMapping("/cancel")
-    @PostMapping("/cancel")
     public Map<String, Object> cancelApplication(@RequestBody Map<String, String> request) {
         String applicationId = request.get("applicationId");
         String studentId = request.get("studentId");
@@ -168,7 +120,6 @@ public class LibraryController {
      * QR 코드 스캔
      */
     @PostMapping("/scan")
-    @PostMapping("/scan")
     public Map<String, Object> scanQRCode(@RequestBody Map<String, String> request) {
         String studentId = request.get("studentId");
         String qrCode = request.get("qrCode");
@@ -184,7 +135,6 @@ public class LibraryController {
     /**
      * 시스템 상태 조회
      */
-    @GetMapping("/system/status")
     @GetMapping("/system/status")
     public Map<String, String> getSystemStatus() {
         String status = libraryService.getSystemStatus();
